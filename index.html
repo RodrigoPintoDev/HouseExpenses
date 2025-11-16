@@ -450,6 +450,57 @@
             placeholder="e.g. 15000"
           />
         </div>
+
+        <div style="margin-top: 16px; display: flex; gap: var(--space)">
+          <div style="flex: 1">
+            <label class="tiny icon-inline"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                />
+              </svg>
+              Yearly Bonuses</label
+            >
+            <input
+              id="bonuses"
+              class="input amount-input"
+              inputmode="decimal"
+              placeholder="e.g. 5000"
+            />
+          </div>
+          <div style="flex: 1">
+            <label class="tiny icon-inline"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+                />
+              </svg>
+              Side Income</label
+            >
+            <input
+              id="sideIncome"
+              class="input amount-input"
+              inputmode="decimal"
+              placeholder="e.g. 800/month"
+            />
+          </div>
+        </div>
       </section>
 
       <section class="card" id="expensesCard">
@@ -683,6 +734,8 @@
       const expensesBody = document.getElementById("expensesBody");
       const targetsBody = document.getElementById("targetsBody");
       const incomeInput = document.getElementById("income");
+      const bonusesInput = document.getElementById("bonuses");
+      const sideIncomeInput = document.getElementById("sideIncome");
       const currentInput = document.getElementById("currentMoney");
       const currencySelect = document.getElementById("currency");
       const totalExpensesEl = document.getElementById("totalExpenses");
@@ -874,6 +927,8 @@
           try {
             const data = JSON.parse(raw);
             incomeInput.value = data.income || "";
+            bonusesInput.value = data.bonuses || "";
+            sideIncomeInput.value = data.sideIncome || "";
             currentInput.value = data.current || "";
             currencySelect.value = data.currency || "€";
             expensesBody.innerHTML = "";
@@ -960,6 +1015,8 @@
 
       function updateAll() {
         const income = sanitize(incomeInput.value);
+        const bonuses = sanitize(bonusesInput.value);
+        const sideIncome = sanitize(sideIncomeInput.value);
         const current = sanitize(currentInput.value);
         const exp = gatherExpenses();
         const targ = gatherTargets();
@@ -967,7 +1024,11 @@
         totalExpensesEl.textContent = fmt(exp.total);
         totalTargetsEl.textContent = fmt(targ.total);
 
-        const net = Math.round((income - exp.total) * 100) / 100;
+        // Calculate monthly net savings: base income + side income + (yearly bonuses / 12)
+        const monthlyBonuses = Math.round((bonuses / 12) * 100) / 100;
+        const net =
+          Math.round((income + sideIncome + monthlyBonuses - exp.total) * 100) /
+          100;
         netSavingsEl.textContent = fmt(net);
 
         // progress
@@ -1031,6 +1092,8 @@
       function saveNow() {
         const data = {
           income: sanitize(incomeInput.value),
+          bonuses: sanitize(bonusesInput.value),
+          sideIncome: sanitize(sideIncomeInput.value),
           current: sanitize(currentInput.value),
           currency: currencySelect.value,
           expenses: Array.from(expensesBody.children).map((tr) => ({
@@ -1055,6 +1118,8 @@
       });
 
       incomeInput.addEventListener("input", updateAll);
+      bonusesInput.addEventListener("input", updateAll);
+      sideIncomeInput.addEventListener("input", updateAll);
       currentInput.addEventListener("input", updateAll);
       currencySelect.addEventListener("change", () => {
         scheduleSave();
