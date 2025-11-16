@@ -79,7 +79,7 @@
       }
       .input {
         width: 100%;
-        padding: 0 14px;
+        padding: 0 12px;
         border-radius: var(--radius);
         border: 1px solid var(--glass);
         background: var(--input-bg);
@@ -95,6 +95,7 @@
         background: var(--input-focus-bg);
       }
       .amount-input {
+        margin-left: 4px;
         font-size: 18px;
         text-align: right;
       }
@@ -130,7 +131,7 @@
       }
       td,
       th {
-        padding: 10px 2px;
+        padding: 6px 0px;
         vertical-align: middle;
       }
       .amount {
@@ -676,7 +677,7 @@
         <td class="amount"><input inputmode="decimal" class="input amount-input" value="${
           item.amount || ""
         }" /></td>
-        <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
+        <td style="width:40px;text-align:right;padding-bottom:10px;"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
       `;
         const nameI = tr.children[1].querySelector("input");
         const amtI = tr.children[2].querySelector("input");
