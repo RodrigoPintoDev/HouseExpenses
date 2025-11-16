@@ -6,14 +6,18 @@
     <title>House Planner</title>
     <style>
       :root {
-        --bg: #0f172a;
-        --card: #1a2847;
-        --muted: #94a3b8;
-        --accent: #3b82f6;
-        --accent2: #f97316;
-        --glass: rgba(255, 255, 255, 0.04);
-        --danger: #ef4444;
-        --success: #22c55e;
+        /* Dark sophisticated palette - soft & warm */
+        --bg: #2d2d3d; /* deep charcoal background */
+        --card: #3a3a4e; /* slightly lighter charcoal card */
+        --text: #e8e8f0; /* soft off-white text */
+        --muted: #a8a8b8; /* soft muted purple-gray */
+        --accent: #8b6f9e; /* soft warm purple */
+        --accent2: #a89bb8; /* lighter soft purple */
+        --glass: rgba(232, 232, 240, 0.08);
+        --input-bg: #323245; /* deep input field */
+        --input-focus-bg: #3f3f54; /* slightly lighter on focus */
+        --danger: #d4847d;
+        --success: #88a894;
         --radius: 16px;
         --space: 12px;
         --input-height: 48px;
@@ -26,8 +30,8 @@
         margin: 0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, sans-serif;
-        background: linear-gradient(180deg, #0f172a 0%, #1a2847 100%);
-        color: #f1f5f9;
+        background: linear-gradient(180deg, var(--bg) 0%, #242430 100%);
+        color: var(--text);
       }
       .wrap {
         max-width: 480px;
@@ -40,7 +44,7 @@
         margin: 0 0 8px;
         font-weight: 800;
         letter-spacing: -0.5px;
-        background: linear-gradient(135deg, #3b82f6, #f97316);
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -51,8 +55,7 @@
         border-radius: var(--radius);
         margin-bottom: var(--space);
         border: 1px solid var(--glass);
-        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
-        backdrop-filter: blur(8px);
+        box-shadow: 0 6px 18px rgba(232, 232, 240, 0.06);
       }
       .row {
         display: flex;
@@ -63,16 +66,18 @@
       label.tiny {
         font-size: 13px;
         color: var(--muted);
-        margin-bottom: 4px;
-        display: block;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       .input {
         width: 100%;
         padding: 0 14px;
         border-radius: var(--radius);
         border: 1px solid var(--glass);
-        background: rgba(255, 255, 255, 0.02);
-        color: inherit;
+        background: var(--input-bg);
+        color: var(--text);
         font-size: 16px;
         height: var(--input-height);
         margin-bottom: 0;
@@ -81,7 +86,7 @@
       .input:focus {
         outline: none;
         border-color: var(--accent);
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--input-focus-bg);
       }
       .amount-input {
         font-size: 18px;
@@ -101,7 +106,7 @@
       .btn:hover {
         background: var(--accent2);
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        box-shadow: 0 8px 20px rgba(139, 111, 158, 0.2);
       }
       .ghost {
         background: transparent;
@@ -152,28 +157,31 @@
       .section-title {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         margin-bottom: 14px;
+        font-size: 16px;
       }
       .section-title svg {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         color: var(--accent);
         flex-shrink: 0;
+        margin-top: -2px;
       }
       .icon-inline {
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
+        flex-shrink: 0;
       }
       .icon-inline svg {
-        width: 16px;
-        height: 16px;
+        width: 18px;
+        height: 18px;
         color: var(--accent);
         flex-shrink: 0;
       }
       .progress-wrap {
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(232, 232, 240, 0.1);
         height: 14px;
         border-radius: 999px;
         overflow: hidden;
@@ -209,7 +217,7 @@
         border-radius: 10px;
         width: 50px;
         height: var(--input-height);
-        background: rgba(255, 255, 255, 0.02);
+        background: rgba(232, 232, 240, 0.05);
         color: inherit;
         border: 1px solid var(--glass);
         margin-bottom: 0;
@@ -224,34 +232,45 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(
-          180deg,
-          rgba(2, 6, 23, 0.92),
-          rgba(2, 6, 23, 0.98)
-        );
-        padding: 14px 0 10px 0;
-        border-top: 1px solid var(--glass);
-        backdrop-filter: blur(4px);
+        background: rgb(36, 36, 48);
+        padding: 16px 0 18px 0;
+        border-top: 1px solid rgba(232, 232, 240, 0.08);
         z-index: 10;
       }
       .bottom-inner {
         max-width: 480px;
         margin: 0 auto;
-        padding: 0 var(--space);
-        display: flex;
-        gap: var(--space);
+        padding: 0 18px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
         align-items: center;
       }
       .bottom-left {
         flex: 1;
       }
+      .bottom-left-content {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 6px;
+      }
+      .bottom-progress-bar {
+        width: 100%;
+      }
       .bottom-right {
-        width: 160px;
         text-align: right;
+        min-width: 120px;
       }
       .bottom-months {
         font-weight: 700;
-        font-size: 16px;
+        font-size: 18px;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .bottom-reach {
+        font-size: 12px;
+        color: var(--muted);
       }
       @media (min-width: 720px) {
         .wrap {
@@ -286,8 +305,9 @@
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 6v12" />
                 <path d="M9 9h.01" />
-                <path d="M15 15h.01" /></svg
-              >Monthly Income</label
+                <path d="M15 15h.01" />
+              </svg>
+              Monthly Income</label
             >
             <input
               id="income"
@@ -428,7 +448,10 @@
             border-top: 1px solid var(--glass);
           "
         >
-          <div class="tiny icon-inline">
+          <div
+            class="tiny"
+            style="display: flex; align-items: center; gap: 8px"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -437,6 +460,7 @@
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
+              style="width: 18px; height: 18px; flex-shrink: 0"
             >
               <circle cx="12" cy="12" r="10" />
               <polyline points="12 6 12 12 16 14" /></svg
@@ -462,12 +486,12 @@
       </section>
     </div>
 
-    <!-- Sticky bottom progress (simplified, no label) -->
+    <!-- Sticky bottom progress (redesigned) -->
     <div class="bottom-progress" aria-hidden="false">
       <div class="bottom-inner">
         <div class="bottom-left">
-          <div style="display: flex; align-items: center; gap: 8px">
-            <div style="flex: 1">
+          <div class="bottom-left-content">
+            <div class="bottom-progress-bar">
               <div class="progress-wrap">
                 <div id="bottomProgressBar" class="progress"></div>
               </div>
@@ -475,7 +499,12 @@
             <div
               id="bottomProgressLabel"
               class="tiny"
-              style="width: 110px; text-align: right"
+              style="
+                width: 80px;
+                text-align: right;
+                margin-bottom: 0;
+                white-space: nowrap;
+              "
             >
               0 / 0
             </div>
@@ -483,7 +512,7 @@
         </div>
         <div class="bottom-right">
           <div id="bottomMonths" class="bottom-months">—</div>
-          <div id="bottomReach" class="tiny"></div>
+          <div id="bottomReach" class="bottom-reach"></div>
         </div>
       </div>
     </div>
@@ -571,9 +600,21 @@
           updateAll();
         });
         del.addEventListener("click", () => {
-          tr.remove();
-          updateAll();
-          saveNow();
+          const name = (nameI.value || "").trim();
+          const amt = (amtI.value || "").trim();
+          if (name === "" && amt === "") {
+            // empty row — remove without confirmation
+            tr.remove();
+            updateAll();
+            saveNow();
+            return;
+          }
+          // non-empty — ask for confirmation
+          if (confirm("Delete this expense?")) {
+            tr.remove();
+            updateAll();
+            saveNow();
+          }
         });
         expensesBody.appendChild(tr);
       }
@@ -599,9 +640,20 @@
           updateAll();
         });
         del.addEventListener("click", () => {
-          tr.remove();
-          updateAll();
-          saveNow();
+          const name = (nameI.value || "").trim();
+          const amt = (amtI.value || "").trim();
+          if (name === "" && amt === "") {
+            // empty row — remove without confirmation
+            tr.remove();
+            updateAll();
+            saveNow();
+            return;
+          }
+          if (confirm("Delete this goal?")) {
+            tr.remove();
+            updateAll();
+            saveNow();
+          }
         });
         targetsBody.appendChild(tr);
       }
