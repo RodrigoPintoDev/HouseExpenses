@@ -3,168 +3,177 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>House Expense Planner</title>
+    <title>House Planner</title>
     <style>
       :root {
-        --bg: #0f1724; /* deep navy */
-        --card: #0b1220;
+        --bg: #0f172a;
+        --card: #1a2847;
         --muted: #94a3b8;
-        --accent: #7c5cff;
-        --accent-2: #00c2a8;
+        --accent: #3b82f6;
+        --accent2: #f97316;
         --glass: rgba(255, 255, 255, 0.04);
-        --glass-2: rgba(255, 255, 255, 0.02);
-        --success: #10b981;
         --danger: #ef4444;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-          Roboto, "Helvetica Neue", Arial;
+        --success: #22c55e;
+        --radius: 16px;
+        --space: 12px;
+        --input-height: 48px;
       }
       * {
         box-sizing: border-box;
       }
       html,
       body {
-        height: 100%;
         margin: 0;
-        background: linear-gradient(180deg, #071022 0%, #081323 60%);
-        color: #e6eef8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(180deg, #0f172a 0%, #1a2847 100%);
+        color: #f1f5f9;
       }
       .wrap {
-        max-width: 980px;
-        margin: 28px auto;
-        padding: 20px;
-      }
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
+        max-width: 480px;
+        margin: var(--space) auto;
+        padding: var(--space);
+        padding-bottom: 60px;
       }
       h1 {
-        margin: 0;
-        font-size: 20px;
+        font-size: 28px;
+        margin: 0 0 8px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #3b82f6, #f97316);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
-      p.lead {
-        margin: 6px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: 1fr 420px;
-        gap: 18px;
-        margin-top: 20px;
-      }
-      @media (max-width: 900px) {
-        .grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
       .card {
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.02),
-          rgba(255, 255, 255, 0.01)
-        );
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.03);
-      }
-      .section-title {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-      }
-      label.small {
-        display: block;
-        font-size: 12px;
-        color: var(--muted);
-        margin-bottom: 6px;
-      }
-      .input {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.03);
-        background: transparent;
-        color: inherit;
-        font-size: 15px;
+        background: var(--card);
+        padding: 24px 18px;
+        border-radius: var(--radius);
+        margin-bottom: var(--space);
+        border: 1px solid var(--glass);
+        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(8px);
       }
       .row {
         display: flex;
-        gap: 10px;
-        align-items: center;
+        gap: var(--space);
+        align-items: flex-end;
+        margin-bottom: 16px;
       }
-      .row > * {
-        flex: 1;
+      label.tiny {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 4px;
+        display: block;
       }
-      .controls {
-        display: flex;
-        gap: 8px;
+      .input {
+        width: 100%;
+        padding: 0 14px;
+        border-radius: var(--radius);
+        border: 1px solid var(--glass);
+        background: rgba(255, 255, 255, 0.02);
+        color: inherit;
+        font-size: 16px;
+        height: var(--input-height);
+        margin-bottom: 0;
+        transition: border 0.2s;
       }
-      button.btn {
+      .input:focus {
+        outline: none;
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .amount-input {
+        font-size: 18px;
+        text-align: right;
+      }
+      .btn {
         background: var(--accent);
-        border: 0;
-        padding: 8px 12px;
-        border-radius: 10px;
         color: white;
+        border: 0;
+        padding: 10px 16px;
+        border-radius: var(--radius);
         font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .btn:hover {
+        background: var(--accent2);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+      }
+      .ghost {
+        background: transparent;
+        border: 1px solid var(--glass);
+        color: var(--muted);
+        padding: 10px 16px;
+        border-radius: var(--radius);
+        font-size: 15px;
         cursor: pointer;
       }
-      button.ghost {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        color: var(--muted);
-      }
-      .small-btn {
-        padding: 6px 8px;
-        border-radius: 8px;
-        font-size: 13px;
-      }
-
       table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 8px;
       }
-      table td,
-      table th {
-        padding: 8px 6px;
-        border-bottom: 1px dashed rgba(255, 255, 255, 0.02);
+      td,
+      th {
+        padding: 10px 2px;
         vertical-align: middle;
       }
       .amount {
         width: 120px;
         text-align: right;
       }
-      .date {
-        width: 115px;
+      .small-btn {
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 14px;
       }
-
-      .muted {
+      .tiny {
+        font-size: 13px;
         color: var(--muted);
-      }
-      .totals {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .big {
-        font-size: 28px;
-        font-weight: 700;
       }
       .metric {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        padding: 10px;
+        align-items: center;
+        padding: 16px;
         border-radius: 10px;
         background: var(--glass);
+        margin-bottom: 12px;
+      }
+      .big {
+        font-size: 22px;
+        font-weight: 700;
+        text-align: right;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .section-title svg {
+        width: 20px;
+        height: 20px;
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+      .icon-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .icon-inline svg {
+        width: 16px;
+        height: 16px;
+        color: var(--accent);
+        flex-shrink: 0;
       }
       .progress-wrap {
-        background: var(--glass-2);
+        background: rgba(255, 255, 255, 0.04);
         height: 14px;
         border-radius: 999px;
         overflow: hidden;
@@ -172,50 +181,85 @@
       .progress {
         height: 100%;
         width: 0;
-        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
         transition: width 0.35s;
       }
-      .danger {
-        color: var(--danger);
+      .trash-btn {
+        background: transparent;
+        border: 0;
+        padding: 6px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
       }
-      .success {
-        color: var(--success);
+      .trash-btn:hover {
+        background: rgba(239, 68, 68, 0.08);
       }
-      .tiny {
-        font-size: 12px;
-        color: var(--muted);
+      .trash-btn svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--danger);
       }
-
-      footer {
-        margin-top: 18px;
+      .currency-select {
+        font-size: 15px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        width: 50px;
+        height: var(--input-height);
+        background: rgba(255, 255, 255, 0.02);
+        color: inherit;
+        border: 1px solid var(--glass);
+        margin-bottom: 0;
+      }
+      .currency-select:focus {
+        outline: none;
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .bottom-progress {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(2, 6, 23, 0.92),
+          rgba(2, 6, 23, 0.98)
+        );
+        padding: 14px 0 10px 0;
+        border-top: 1px solid var(--glass);
+        backdrop-filter: blur(4px);
+        z-index: 10;
+      }
+      .bottom-inner {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 0 var(--space);
         display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: var(--space);
+        align-items: center;
       }
-      .help {
-        font-size: 12px;
-        color: var(--muted);
+      .bottom-left {
+        flex: 1;
       }
-      .icon {
-        width: 18px;
-        height: 18px;
-        display: inline-block;
-        vertical-align: middle;
+      .bottom-right {
+        width: 160px;
+        text-align: right;
       }
-
-      .actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
+      .bottom-months {
+        font-weight: 700;
+        font-size: 16px;
       }
-
-      /* responsive spacing for phone */
-      @media (max-width: 420px) {
+      @media (min-width: 720px) {
         .wrap {
-          padding: 12px;
+          padding: 32px;
+          max-width: 720px;
         }
-        .card {
-          padding: 12px;
+        .bottom-inner {
+          max-width: 720px;
         }
       }
     </style>
@@ -223,182 +267,229 @@
   <body>
     <div class="wrap">
       <header>
-        <div>
-          <h1>House Expense Planner</h1>
-          <p class="lead">
-            Track income, monthly expenses, and see how long until your house
-            fund is reached — all stored locally on your phone.
-          </p>
-        </div>
-        <div class="actions">
-          <button id="exportCsv" class="btn small-btn">Export CSV</button>
-          <button id="resetBtn" class="ghost small-btn">Reset</button>
-        </div>
+        <h1>House Planner</h1>
       </header>
 
-      <div class="grid">
-        <div>
-          <div class="card" style="margin-bottom: 14px">
-            <div class="section-title"><strong>Income & Targets</strong></div>
-            <div style="display: grid; gap: 10px">
-              <div class="row">
-                <div>
-                  <label class="small">Monthly Income</label>
-                  <input
-                    id="income"
-                    class="input"
-                    inputmode="decimal"
-                    placeholder="e.g. 1500"
-                  />
-                </div>
-                <div style="width: 120px">
-                  <label class="small">Currency</label>
-                  <select id="currency" class="input">
-                    <option value="EUR">€ EUR</option>
-                    <option value="USD">$ USD</option>
-                    <option value="GBP">£ GBP</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="row">
-                <div>
-                  <label class="small">Current Savings</label>
-                  <input
-                    id="currentMoney"
-                    class="input"
-                    inputmode="decimal"
-                    placeholder="e.g. 2300"
-                  />
-                </div>
-                <div>
-                  <label class="small">House target (total cost)</label>
-                  <input
-                    id="targetMoney"
-                    class="input"
-                    inputmode="decimal"
-                    placeholder="e.g. 20000"
-                  />
-                </div>
-              </div>
-
-              <div class="tiny">
-                Tip: Everything you type is saved locally on your phone. No
-                account required.
-              </div>
-            </div>
+      <section class="card">
+        <div class="row">
+          <div style="flex: 1">
+            <label class="tiny icon-inline"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v12" />
+                <path d="M9 9h.01" />
+                <path d="M15 15h.01" /></svg
+              >Monthly Income</label
+            >
+            <input
+              id="income"
+              class="input amount-input"
+              inputmode="decimal"
+              placeholder="e.g. 2500"
+            />
           </div>
-
-          <div class="card">
-            <div class="section-title">
-              <strong>Monthly Expenses</strong>
-              <div style="display: flex; gap: 8px">
-                <button id="addExpense" class="btn small-btn">Add</button>
-              </div>
-            </div>
-
-            <div id="expensesContainer">
-              <table id="expensesTable">
-                <thead>
-                  <tr>
-                    <th style="text-align: left">Category / Item</th>
-                    <th class="amount">Monthly Amount</th>
-                    <th class="date tiny">Repeat</th>
-                    <th style="width: 50px"></th>
-                  </tr>
-                </thead>
-                <tbody id="expensesBody">
-                  <!-- rows created by JS -->
-                </tbody>
-              </table>
-            </div>
+          <div>
+            <label class="tiny">Cur.</label>
+            <select id="currency" class="currency-select">
+              <option value="EUR">€</option>
+              <option value="USD">$</option>
+              <option value="GBP">£</option>
+            </select>
           </div>
         </div>
 
-        <aside>
-          <div class="card totals">
-            <div class="section-title"><strong>Summary</strong></div>
-            <div class="metric">
-              <div class="tiny">Total monthly expenses</div>
-              <div id="totalExpenses" class="big">€0</div>
-            </div>
-            <div class="metric">
-              <div class="tiny">Monthly net savings</div>
-              <div id="netSavings" class="big">€0</div>
-            </div>
-            <div class="metric">
-              <div class="tiny">% of income spent</div>
-              <div id="pctSpent" class="big">0%</div>
-            </div>
+        <div style="margin-top: 16px">
+          <label class="tiny icon-inline"
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" /></svg
+            >Current Savings</label
+          >
+          <input
+            id="currentMoney"
+            class="input amount-input"
+            inputmode="decimal"
+            placeholder="e.g. 15000"
+          />
+        </div>
+      </section>
 
-            <div style="margin-top: 8px">
-              <div class="tiny">Progress toward house target</div>
-              <div
-                style="
-                  display: flex;
-                  gap: 8px;
-                  align-items: center;
-                  margin-top: 6px;
-                "
-              >
-                <div style="flex: 1">
-                  <div class="progress-wrap">
-                    <div id="progressBar" class="progress"></div>
-                  </div>
-                </div>
-                <div
-                  id="progressLabel"
-                  class="tiny"
-                  style="width: 110px; text-align: right"
-                >
-                  0 / 0
-                </div>
-              </div>
-            </div>
+      <section class="card" id="expensesCard">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+          "
+        >
+          <div class="section-title">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <polyline points="19 12 12 19 5 12" /></svg
+            ><strong>Monthly Expenses</strong>
+          </div>
+          <button id="addExpense" class="btn small-btn">+ Add</button>
+        </div>
+        <table id="expensesTable">
+          <tbody id="expensesBody"></tbody>
+        </table>
+      </section>
 
-            <div style="margin-top: 12px">
-              <div class="tiny">Estimated time to reach target</div>
-              <div
-                style="margin-top: 8px; font-weight: 700; font-size: 16px"
-                id="monthsNeeded"
-              >
-                —
-              </div>
-              <div class="tiny" id="reachDate">—</div>
-              <div
-                id="advice"
-                class="tiny"
-                style="margin-top: 8px; color: var(--muted)"
-              ></div>
+      <section class="card" id="targetsCard">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+          "
+        >
+          <div class="section-title">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" /></svg
+            ><strong>Home Investment Goals</strong>
+          </div>
+          <button id="addTarget" class="btn small-btn">+ Add</button>
+        </div>
+        <table id="targetsTable">
+          <tbody id="targetsBody"></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <div class="metric">
+          <div class="tiny">Total Monthly Outflow</div>
+          <div id="totalExpenses" class="big">€0</div>
+        </div>
+        <div class="metric">
+          <div class="tiny">Monthly Net Savings</div>
+          <div id="netSavings" class="big">€0</div>
+        </div>
+        <div class="metric">
+          <div class="tiny">Total Investment Target</div>
+          <div id="totalTargets" class="big">€0</div>
+        </div>
+
+        <div
+          style="margin-top: 10px; display: flex; gap: 8px; align-items: center"
+        >
+          <div style="flex: 1">
+            <div class="progress-wrap">
+              <div id="progressBar" class="progress"></div>
             </div>
           </div>
+          <div
+            id="progressLabel"
+            class="tiny"
+            style="width: 90px; text-align: right"
+          >
+            0 / 0
+          </div>
+        </div>
 
-          <div style="height: 12px"></div>
+        <div
+          style="
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--glass);
+          "
+        >
+          <div class="tiny icon-inline">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" /></svg
+            >Time to Your Dream Home
+          </div>
+          <div id="monthsNeeded" style="margin-top: 6px; font-weight: 700">
+            —
+          </div>
+          <div id="reachDate" class="tiny"></div>
+        </div>
 
-          <div class="card">
-            <div class="section-title"><strong>Quick actions</strong></div>
-            <div style="display: flex; flex-direction: column; gap: 8px">
-              <button id="saveNow" class="btn">Save now</button>
-              <button id="clearLocal" class="ghost">Clear saved data</button>
-              <div class="tiny muted">
-                Exporting CSV allows you to keep a backup of your numbers.
+        <div
+          style="
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--glass);
+            display: flex;
+            gap: 8px;
+          "
+        >
+          <button id="clearLocal" class="ghost">Clear saved data</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sticky bottom progress (simplified, no label) -->
+    <div class="bottom-progress" aria-hidden="false">
+      <div class="bottom-inner">
+        <div class="bottom-left">
+          <div style="display: flex; align-items: center; gap: 8px">
+            <div style="flex: 1">
+              <div class="progress-wrap">
+                <div id="bottomProgressBar" class="progress"></div>
               </div>
             </div>
+            <div
+              id="bottomProgressLabel"
+              class="tiny"
+              style="width: 110px; text-align: right"
+            >
+              0 / 0
+            </div>
           </div>
-        </aside>
+        </div>
+        <div class="bottom-right">
+          <div id="bottomMonths" class="bottom-months">—</div>
+          <div id="bottomReach" class="tiny"></div>
+        </div>
       </div>
-
-      <footer>
-        <div class="help">
-          Made for quick planning — edits saved locally. Want extra features
-          (charts, recurring savings, multiple targets)? Tell me and I’ll add
-          them.
-        </div>
-      </footer>
     </div>
 
     <script>
-      // Utility: format currency
+      // Helpers
       function fmt(n) {
         const cur = document.getElementById("currency").value || "EUR";
         try {
@@ -413,93 +504,121 @@
       }
       function parseNum(v) {
         if (v === null || v === undefined || v === "") return 0;
-        v = String(v).replace(/[^0-9.\-]/g, "");
+        v = String(v).replace(/[^0-9.\-\.]/g, "");
         if (v === "") return 0;
         return Number(v);
       }
+      function sanitize(v) {
+        const n = parseNum(v);
+        return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
+      }
 
-      // Storage key
-      const KEY = "house_planner_v1";
+      const KEY = "house_planner_v4";
 
-      // DOM refs
       const expensesBody = document.getElementById("expensesBody");
-      const addBtn = document.getElementById("addExpense");
+      const targetsBody = document.getElementById("targetsBody");
       const incomeInput = document.getElementById("income");
       const currentInput = document.getElementById("currentMoney");
-      const targetInput = document.getElementById("targetMoney");
       const currencySelect = document.getElementById("currency");
       const totalExpensesEl = document.getElementById("totalExpenses");
       const netSavingsEl = document.getElementById("netSavings");
-      const pctSpentEl = document.getElementById("pctSpent");
+      const totalTargetsEl = document.getElementById("totalTargets");
+      const progressBar = document.getElementById("progressBar");
+      const bottomProgressBar = document.getElementById("bottomProgressBar");
+      const progressLabel = document.getElementById("progressLabel");
+      const bottomProgressLabel = document.getElementById(
+        "bottomProgressLabel"
+      );
       const monthsNeededEl = document.getElementById("monthsNeeded");
       const reachDateEl = document.getElementById("reachDate");
-      const progressBar = document.getElementById("progressBar");
-      const progressLabel = document.getElementById("progressLabel");
-      const adviceEl = document.getElementById("advice");
+      const bottomMonths = document.getElementById("bottomMonths");
+      const bottomReach = document.getElementById("bottomReach");
 
-      // Default expense rows
-      const DEFAULTS = [
+      const DEFAULT_EXP = [
         { name: "Rent / Mortgage", amount: 0 },
         { name: "Food & Groceries", amount: 0 },
-        { name: "Utilities (water, electric)", amount: 0 },
+        { name: "Utilities", amount: 0 },
         { name: "Transport", amount: 0 },
-        { name: "Insurance / Taxes", amount: 0 },
-        { name: "Misc / Entertainment", amount: 0 },
+        { name: "Insurance", amount: 0 },
       ];
 
-      function createRow(item) {
+      const DEFAULT_TARG = [
+        { name: "Terrain", cost: 0 },
+        { name: "House construction", cost: 0 },
+        { name: "Canalization", cost: 0 },
+        { name: "Electrics", cost: 0 },
+        { name: "Appliances", cost: 0 },
+      ];
+
+      function createExpenseRow(item) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-        <td><input class="input" placeholder="Category or item" value="${escapeHtml(
+        <td style="width:60%"><input class="input text-input" placeholder="Item" value="${escapeHtml(
           item.name || ""
         )}" /></td>
-        <td class="amount"><input inputmode="decimal" class="input" style="text-align:right" value="${
+        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${
           item.amount || ""
         }" /></td>
-        <td class="date"><select class="input"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select></td>
-        <td style="text-align:right"><button class="ghost small-btn">Del</button></td>
+        <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
       `;
-
-        const nameInput = tr.children[0].querySelector("input");
-        const amountInput = tr.children[1].querySelector("input");
-        const repeatSelect = tr.children[2].querySelector("select");
-        const delBtn = tr.children[3].querySelector("button");
-
-        // initialize
-        repeatSelect.value = item.repeat || "monthly";
-
-        // events
-        nameInput.addEventListener("input", scheduleSave);
-        amountInput.addEventListener("input", updateAll);
-        amountInput.addEventListener("blur", () => {
-          amountInput.value = sanitizeNumberField(amountInput.value);
+        const nameI = tr.children[0].querySelector("input");
+        const amtI = tr.children[1].querySelector("input");
+        const del = tr.children[2].querySelector("button");
+        nameI.addEventListener("input", scheduleSave);
+        amtI.addEventListener("input", updateAll);
+        amtI.addEventListener("blur", () => {
+          amtI.value = sanitizeField(amtI.value);
           updateAll();
         });
-        repeatSelect.addEventListener("change", updateAll);
-        delBtn.addEventListener("click", () => {
+        del.addEventListener("click", () => {
           tr.remove();
           updateAll();
           saveNow();
         });
-
         expensesBody.appendChild(tr);
       }
 
-      function sanitizeNumberField(v) {
+      function createTargetRow(item) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td style="width:60%"><input class="input text-input" placeholder="Target item e.g. Terrain" value="${escapeHtml(
+          item.name || ""
+        )}" /></td>
+        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${
+          item.cost || ""
+        }" /></td>
+        <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
+      `;
+        const nameI = tr.children[0].querySelector("input");
+        const amtI = tr.children[1].querySelector("input");
+        const del = tr.children[2].querySelector("button");
+        nameI.addEventListener("input", scheduleSave);
+        amtI.addEventListener("input", updateAll);
+        amtI.addEventListener("blur", () => {
+          amtI.value = sanitizeField(amtI.value);
+          updateAll();
+        });
+        del.addEventListener("click", () => {
+          tr.remove();
+          updateAll();
+          saveNow();
+        });
+        targetsBody.appendChild(tr);
+      }
+
+      function sanitizeField(v) {
         const n = parseNum(v);
         if (!Number.isFinite(n)) return "";
-        // keep two decimals if needed
         return n % 1 === 0
           ? String(Math.round(n))
           : String(Math.round(n * 100) / 100);
       }
-
       function escapeHtml(s) {
-        return (s + "")
+        return (s || "")
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
+          .replace(/\"/g, "&quot;");
       }
 
       function load() {
@@ -509,17 +628,18 @@
             const data = JSON.parse(raw);
             incomeInput.value = data.income || "";
             currentInput.value = data.current || "";
-            targetInput.value = data.target || "";
-            currencySelect.value = data.currency || "EUR";
-
-            // clear rows
+            currencySelect.value = data.currency || "€";
             expensesBody.innerHTML = "";
+            targetsBody.innerHTML = "";
             (data.expenses && data.expenses.length
               ? data.expenses
-              : DEFAULTS
-            ).forEach((e) => createRow(e));
+              : DEFAULT_EXP
+            ).forEach((e) => createExpenseRow(e));
+            (data.targets && data.targets.length
+              ? data.targets
+              : DEFAULT_TARG
+            ).forEach((t) => createTargetRow(t));
           } catch (e) {
-            console.error("load error", e);
             seedDefaults();
           }
         } else {
@@ -530,54 +650,70 @@
 
       function seedDefaults() {
         expensesBody.innerHTML = "";
-        DEFAULTS.forEach((d) => createRow(d));
-        incomeInput.value = "";
-        currentInput.value = "";
-        targetInput.value = "";
+        targetsBody.innerHTML = "";
+        DEFAULT_EXP.forEach((e) => createExpenseRow(e));
+        DEFAULT_TARG.forEach((t) => createTargetRow(t));
       }
 
-      function gather() {
-        const items = [];
+      function gatherExpenses() {
+        let total = 0;
+        const rows = [];
         for (const tr of expensesBody.children) {
           const name = tr.children[0].querySelector("input").value || "";
-          const amount = parseNum(tr.children[1].querySelector("input").value);
-          const repeat = tr.children[2].querySelector("select").value;
-          // normalize weekly/yearly to monthly
-          let monthly = amount;
-          if (repeat === "weekly") monthly = amount * 4.345; // approx weeks per month
-          if (repeat === "yearly") monthly = amount / 12;
-          items.push({ name, amount: monthly, raw: amount, repeat });
+          const amt = sanitize(tr.children[1].querySelector("input").value);
+          total += amt;
+          rows.push({ name, amount: amt });
         }
-        return items;
+        return { rows, total };
+      }
+
+      function gatherTargets() {
+        let total = 0;
+        const rows = [];
+        for (const tr of targetsBody.children) {
+          const name = tr.children[0].querySelector("input").value || "";
+          const cost = sanitize(tr.children[1].querySelector("input").value);
+          total += cost;
+          rows.push({ name, cost });
+        }
+        return { rows, total };
+      }
+
+      function monthsToYearsText(months) {
+        if (months === null) return "—";
+        if (months <= 0) return "0 months";
+        if (months < 12) return months + (months === 1 ? " month" : " months");
+        const years = Math.floor(months / 12);
+        const rem = months % 12;
+        let parts = [];
+        parts.push(years + (years === 1 ? " year" : " years"));
+        if (rem > 0) parts.push(rem + (rem === 1 ? " month" : " months"));
+        return parts.join(" ");
       }
 
       function updateAll() {
-        // calculate totals
-        const income = parseNum(incomeInput.value);
-        const current = parseNum(currentInput.value);
-        const target = parseNum(targetInput.value);
-        const items = gather();
-        let totalMonthly = 0;
-        items.forEach(
-          (i) => (totalMonthly += Number.isFinite(i.amount) ? i.amount : 0)
-        );
+        const income = sanitize(incomeInput.value);
+        const current = sanitize(currentInput.value);
+        const exp = gatherExpenses();
+        const targ = gatherTargets();
 
-        const totalRounded = Math.round(totalMonthly * 100) / 100;
-        totalExpensesEl.textContent = fmt(totalRounded);
+        totalExpensesEl.textContent = fmt(exp.total);
+        totalTargetsEl.textContent = fmt(targ.total);
 
-        const net = Math.round((income - totalRounded) * 100) / 100;
+        const net = Math.round((income - exp.total) * 100) / 100;
         netSavingsEl.textContent = fmt(net);
 
-        const pct = income > 0 ? Math.round((totalRounded / income) * 100) : 0;
-        pctSpentEl.textContent = pct + "%";
-
-        // progress toward target
-        const progress = target > 0 ? Math.min(1, current / target) : 0;
-        progressBar.style.width = Math.round(progress * 100) + "%";
-        progressLabel.textContent = fmt(current) + " / " + fmt(target);
+        // progress
+        const progress = targ.total > 0 ? Math.min(1, current / targ.total) : 0;
+        const pct = Math.round(progress * 100);
+        progressBar.style.width = pct + "%";
+        bottomProgressBar.style.width = pct + "%";
+        progressLabel.textContent = fmt(current) + " / " + fmt(targ.total);
+        bottomProgressLabel.textContent =
+          fmt(current) + " / " + fmt(targ.total);
 
         // months needed
-        const remaining = Math.max(0, target - current);
+        const remaining = Math.max(0, targ.total - current);
         let monthsNeeded = null;
         if (net <= 0) {
           monthsNeeded = null;
@@ -588,32 +724,35 @@
         if (remaining <= 0) {
           monthsNeededEl.textContent = "Already reached 🎉";
           reachDateEl.textContent = "";
-          adviceEl.textContent = "";
+          bottomMonths.textContent = "Reached";
+          bottomReach.textContent = "";
         } else if (monthsNeeded === null) {
           monthsNeededEl.innerHTML =
-            '<span class="danger">Unreachable with current monthly savings</span>';
-          reachDateEl.textContent =
-            "Increase income or reduce monthly expenses to start saving.";
-          adviceEl.textContent = "";
+            '<span style="color:' +
+            getComputedStyle(document.documentElement).getPropertyValue(
+              "--danger"
+            ) +
+            '">Unreachable</span>';
+          reachDateEl.textContent = "Increase income or reduce expenses.";
+          bottomMonths.textContent = "—";
+          bottomReach.textContent = "Cannot project";
         } else {
-          monthsNeededEl.textContent = monthsNeeded + " months";
+          monthsNeededEl.textContent = monthsToYearsText(monthsNeeded);
           const now = new Date();
           const reach = new Date(
             now.getFullYear(),
             now.getMonth() + monthsNeeded,
             now.getDate()
           );
-          reachDateEl.textContent =
-            "Projected: " +
-            reach.toLocaleString(undefined, { month: "long", year: "numeric" });
-
-          const perYear = Math.floor(monthsNeeded / 12);
-          const perMonths = monthsNeeded % 12;
-          adviceEl.textContent = `If you save ${fmt(
-            net
-          )} per month you'll reach your goal in ${monthsNeeded} months (${
-            perYear > 0 ? perYear + " yr(s)" : ""
-          } ${perMonths > 0 ? perMonths + " mo" : ""}).`;
+          reachDateEl.textContent = reach.toLocaleString(undefined, {
+            month: "long",
+            year: "numeric",
+          });
+          bottomMonths.textContent = monthsToYearsText(monthsNeeded);
+          bottomReach.textContent = reach.toLocaleString(undefined, {
+            month: "short",
+            year: "numeric",
+          });
         }
 
         scheduleSave();
@@ -627,114 +766,52 @@
 
       function saveNow() {
         const data = {
-          income: sanitizeNumberField(incomeInput.value),
-          current: sanitizeNumberField(currentInput.value),
-          target: sanitizeNumberField(targetInput.value),
+          income: sanitize(incomeInput.value),
+          current: sanitize(currentInput.value),
           currency: currencySelect.value,
           expenses: Array.from(expensesBody.children).map((tr) => ({
             name: tr.children[0].querySelector("input").value,
-            amount: parseNum(tr.children[1].querySelector("input").value),
-            repeat: tr.children[2].querySelector("select").value,
+            amount: sanitize(tr.children[1].querySelector("input").value),
+          })),
+          targets: Array.from(targetsBody.children).map((tr) => ({
+            name: tr.children[0].querySelector("input").value,
+            cost: sanitize(tr.children[1].querySelector("input").value),
           })),
         };
         localStorage.setItem(KEY, JSON.stringify(data));
-        // small visual feedback
-        document.getElementById("saveNow").textContent = "Saved";
-        setTimeout(
-          () => (document.getElementById("saveNow").textContent = "Save now"),
-          900
-        );
       }
 
-      // Buttons
-      document.getElementById("saveNow").addEventListener("click", () => {
-        saveNow();
+      document
+        .getElementById("addExpense")
+        .addEventListener("click", () =>
+          createExpenseRow({ name: "", amount: "" })
+        );
+      document
+        .getElementById("addTarget")
+        .addEventListener("click", () =>
+          createTargetRow({ name: "", cost: "" })
+        );
+
+      incomeInput.addEventListener("input", updateAll);
+      currentInput.addEventListener("input", updateAll);
+      currencySelect.addEventListener("change", () => {
+        scheduleSave();
         updateAll();
       });
+
       document.getElementById("clearLocal").addEventListener("click", () => {
         if (confirm("Clear saved data? This cannot be undone.")) {
           localStorage.removeItem(KEY);
           load();
         }
       });
-      document.getElementById("resetBtn").addEventListener("click", () => {
-        if (confirm("Reset the form to defaults?")) {
-          localStorage.removeItem(KEY);
-          seedDefaults();
-          updateAll();
-        }
-      });
 
-      addBtn.addEventListener("click", () => {
-        createRow({ name: "", amount: "" });
-      });
-
-      // Export CSV
-      document.getElementById("exportCsv").addEventListener("click", () => {
-        const income = sanitizeNumberField(incomeInput.value);
-        const current = sanitizeNumberField(currentInput.value);
-        const target = sanitizeNumberField(targetInput.value);
-        const cur = currencySelect.value;
-        const rows = [];
-        rows.push(["Monthly Income", income, cur]);
-        rows.push(["Current Saving", current, cur]);
-        rows.push(["Target", target, cur]);
-        rows.push([]);
-        rows.push([
-          "Category",
-          "Repeat",
-          "Amount (orig)",
-          "Amount (monthly)",
-          "Currency",
-        ]);
-        Array.from(expensesBody.children).forEach((tr) => {
-          const name = tr.children[0].querySelector("input").value;
-          const raw = parseNum(tr.children[1].querySelector("input").value);
-          const repeat = tr.children[2].querySelector("select").value;
-          let monthly = raw;
-          if (repeat === "weekly") monthly = raw * 4.345;
-          if (repeat === "yearly") monthly = raw / 12;
-          rows.push([name, repeat, raw, Math.round(monthly * 100) / 100, cur]);
-        });
-
-        const csv = rows
-          .map((r) =>
-            r
-              .map((c) => '"' + String(c || "").replace(/"/g, '""') + '"')
-              .join(",")
-          )
-          .join("\n");
-        const blob = new Blob([csv], { type: "text/csv" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "house_planner_export.csv";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      });
-
-      // helpers
-      function round2(n) {
-        return Math.round(n * 100) / 100;
+      function trashSvg() {
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
       }
-
-      function restoreOnCurrencyChange() {
-        // only saves currency immediately
-        scheduleSave();
-        updateAll();
-      }
-
-      currencySelect.addEventListener("change", restoreOnCurrencyChange);
 
       // initial load
       load();
-
-      // auto update when inputs change
-      incomeInput.addEventListener("input", updateAll);
-      currentInput.addEventListener("input", updateAll);
-      targetInput.addEventListener("input", updateAll);
     </script>
   </body>
 </html>
