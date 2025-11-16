@@ -28,9 +28,13 @@
       html,
       body {
         margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, sans-serif;
         background: linear-gradient(180deg, var(--bg) 0%, #242430 100%);
+        background-attachment: fixed;
         color: var(--text);
       }
       .wrap {
@@ -743,6 +747,26 @@
         return parts.join(" ");
       }
 
+      function formatDateWithTextMonth(date) {
+        const monthNames = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        const month = monthNames[date.getMonth()];
+        const year = date.getFullYear();
+        return month + " " + year;
+      }
+
       function updateAll() {
         const income = sanitize(incomeInput.value);
         const current = sanitize(currentInput.value);
@@ -801,10 +825,7 @@
             year: "numeric",
           });
           bottomMonths.textContent = monthsToYearsText(monthsNeeded);
-          bottomReach.textContent = reach.toLocaleString(undefined, {
-            month: "short",
-            year: "numeric",
-          });
+          bottomReach.textContent = formatDateWithTextMonth(reach);
         }
 
         scheduleSave();
