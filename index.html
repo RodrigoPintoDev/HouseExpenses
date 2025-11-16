@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>House Expense Planner</title>
+    <style>
+      :root {
+        --bg: #0f1724; /* deep navy */
+        --card: #0b1220;
+        --muted: #94a3b8;
+        --accent: #7c5cff;
+        --accent-2: #00c2a8;
+        --glass: rgba(255, 255, 255, 0.04);
+        --glass-2: rgba(255, 255, 255, 0.02);
+        --success: #10b981;
+        --danger: #ef4444;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+          Roboto, "Helvetica Neue", Arial;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: linear-gradient(180deg, #071022 0%, #081323 60%);
+        color: #e6eef8;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 28px auto;
+        padding: 20px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 20px;
+      }
+      p.lead {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 18px;
+        margin-top: 20px;
+      }
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      label.small {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        background: transparent;
+        color: inherit;
+        font-size: 15px;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .row > * {
+        flex: 1;
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+      }
+      button.btn {
+        background: var(--accent);
+        border: 0;
+        padding: 8px 12px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button.ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+      }
+      .small-btn {
+        padding: 6px 8px;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+      }
+      table td,
+      table th {
+        padding: 8px 6px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.02);
+        vertical-align: middle;
+      }
+      .amount {
+        width: 120px;
+        text-align: right;
+      }
+      .date {
+        width: 115px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+      .totals {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .big {
+        font-size: 28px;
+        font-weight: 700;
+      }
+      .metric {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-radius: 10px;
+        background: var(--glass);
+      }
+      .progress-wrap {
+        background: var(--glass-2);
+        height: 14px;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        transition: width 0.35s;
+      }
+      .danger {
+        color: var(--danger);
+      }
+      .success {
+        color: var(--success);
+      }
+      .tiny {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      footer {
+        margin-top: 18px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .help {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .icon {
+        width: 18px;
+        height: 18px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* responsive spacing for phone */
+      @media (max-width: 420px) {
+        .wrap {
+          padding: 12px;
+        }
+        .card {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div>
+          <h1>House Expense Planner</h1>
+          <p class="lead">
+            Track income, monthly expenses, and see how long until your house
+            fund is reached — all stored locally on your phone.
+          </p>
+        </div>
+        <div class="actions">
+          <button id="exportCsv" class="btn small-btn">Export CSV</button>
+          <button id="resetBtn" class="ghost small-btn">Reset</button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <div>
+          <div class="card" style="margin-bottom: 14px">
+            <div class="section-title"><strong>Income & Targets</strong></div>
+            <div style="display: grid; gap: 10px">
+              <div class="row">
+                <div>
+                  <label class="small">Monthly Income</label>
+                  <input
+                    id="income"
+                    class="input"
+                    inputmode="decimal"
+                    placeholder="e.g. 1500"
+                  />
+                </div>
+                <div style="width: 120px">
+                  <label class="small">Currency</label>
+                  <select id="currency" class="input">
+                    <option value="EUR">€ EUR</option>
+                    <option value="USD">$ USD</option>
+                    <option value="GBP">£ GBP</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label class="small">Current Savings</label>
+                  <input
+                    id="currentMoney"
+                    class="input"
+                    inputmode="decimal"
+                    placeholder="e.g. 2300"
+                  />
+                </div>
+                <div>
+                  <label class="small">House target (total cost)</label>
+                  <input
+                    id="targetMoney"
+                    class="input"
+                    inputmode="decimal"
+                    placeholder="e.g. 20000"
+                  />
+                </div>
+              </div>
+
+              <div class="tiny">
+                Tip: Everything you type is saved locally on your phone. No
+                account required.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title">
+              <strong>Monthly Expenses</strong>
+              <div style="display: flex; gap: 8px">
+                <button id="addExpense" class="btn small-btn">Add</button>
+              </div>
+            </div>
+
+            <div id="expensesContainer">
+              <table id="expensesTable">
+                <thead>
+                  <tr>
+                    <th style="text-align: left">Category / Item</th>
+                    <th class="amount">Monthly Amount</th>
+                    <th class="date tiny">Repeat</th>
+                    <th style="width: 50px"></th>
+                  </tr>
+                </thead>
+                <tbody id="expensesBody">
+                  <!-- rows created by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="card totals">
+            <div class="section-title"><strong>Summary</strong></div>
+            <div class="metric">
+              <div class="tiny">Total monthly expenses</div>
+              <div id="totalExpenses" class="big">€0</div>
+            </div>
+            <div class="metric">
+              <div class="tiny">Monthly net savings</div>
+              <div id="netSavings" class="big">€0</div>
+            </div>
+            <div class="metric">
+              <div class="tiny">% of income spent</div>
+              <div id="pctSpent" class="big">0%</div>
+            </div>
+
+            <div style="margin-top: 8px">
+              <div class="tiny">Progress toward house target</div>
+              <div
+                style="
+                  display: flex;
+                  gap: 8px;
+                  align-items: center;
+                  margin-top: 6px;
+                "
+              >
+                <div style="flex: 1">
+                  <div class="progress-wrap">
+                    <div id="progressBar" class="progress"></div>
+                  </div>
+                </div>
+                <div
+                  id="progressLabel"
+                  class="tiny"
+                  style="width: 110px; text-align: right"
+                >
+                  0 / 0
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 12px">
+              <div class="tiny">Estimated time to reach target</div>
+              <div
+                style="margin-top: 8px; font-weight: 700; font-size: 16px"
+                id="monthsNeeded"
+              >
+                —
+              </div>
+              <div class="tiny" id="reachDate">—</div>
+              <div
+                id="advice"
+                class="tiny"
+                style="margin-top: 8px; color: var(--muted)"
+              ></div>
+            </div>
+          </div>
+
+          <div style="height: 12px"></div>
+
+          <div class="card">
+            <div class="section-title"><strong>Quick actions</strong></div>
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <button id="saveNow" class="btn">Save now</button>
+              <button id="clearLocal" class="ghost">Clear saved data</button>
+              <div class="tiny muted">
+                Exporting CSV allows you to keep a backup of your numbers.
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer>
+        <div class="help">
+          Made for quick planning — edits saved locally. Want extra features
+          (charts, recurring savings, multiple targets)? Tell me and I’ll add
+          them.
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Utility: format currency
+      function fmt(n) {
+        const cur = document.getElementById("currency").value || "EUR";
+        try {
+          return new Intl.NumberFormat(undefined, {
+            style: "currency",
+            currency: cur,
+            maximumFractionDigits: 0,
+          }).format(n || 0);
+        } catch (e) {
+          return cur + " " + Math.round((n || 0) * 100) / 100;
+        }
+      }
+      function parseNum(v) {
+        if (v === null || v === undefined || v === "") return 0;
+        v = String(v).replace(/[^0-9.\-]/g, "");
+        if (v === "") return 0;
+        return Number(v);
+      }
+
+      // Storage key
+      const KEY = "house_planner_v1";
+
+      // DOM refs
+      const expensesBody = document.getElementById("expensesBody");
+      const addBtn = document.getElementById("addExpense");
+      const incomeInput = document.getElementById("income");
+      const currentInput = document.getElementById("currentMoney");
+      const targetInput = document.getElementById("targetMoney");
+      const currencySelect = document.getElementById("currency");
+      const totalExpensesEl = document.getElementById("totalExpenses");
+      const netSavingsEl = document.getElementById("netSavings");
+      const pctSpentEl = document.getElementById("pctSpent");
+      const monthsNeededEl = document.getElementById("monthsNeeded");
+      const reachDateEl = document.getElementById("reachDate");
+      const progressBar = document.getElementById("progressBar");
+      const progressLabel = document.getElementById("progressLabel");
+      const adviceEl = document.getElementById("advice");
+
+      // Default expense rows
+      const DEFAULTS = [
+        { name: "Rent / Mortgage", amount: 0 },
+        { name: "Food & Groceries", amount: 0 },
+        { name: "Utilities (water, electric)", amount: 0 },
+        { name: "Transport", amount: 0 },
+        { name: "Insurance / Taxes", amount: 0 },
+        { name: "Misc / Entertainment", amount: 0 },
+      ];
+
+      function createRow(item) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+        <td><input class="input" placeholder="Category or item" value="${escapeHtml(
+          item.name || ""
+        )}" /></td>
+        <td class="amount"><input inputmode="decimal" class="input" style="text-align:right" value="${
+          item.amount || ""
+        }" /></td>
+        <td class="date"><select class="input"><option value="monthly">Monthly</option><option value="weekly">Weekly</option><option value="yearly">Yearly</option></select></td>
+        <td style="text-align:right"><button class="ghost small-btn">Del</button></td>
+      `;
+
+        const nameInput = tr.children[0].querySelector("input");
+        const amountInput = tr.children[1].querySelector("input");
+        const repeatSelect = tr.children[2].querySelector("select");
+        const delBtn = tr.children[3].querySelector("button");
+
+        // initialize
+        repeatSelect.value = item.repeat || "monthly";
+
+        // events
+        nameInput.addEventListener("input", scheduleSave);
+        amountInput.addEventListener("input", updateAll);
+        amountInput.addEventListener("blur", () => {
+          amountInput.value = sanitizeNumberField(amountInput.value);
+          updateAll();
+        });
+        repeatSelect.addEventListener("change", updateAll);
+        delBtn.addEventListener("click", () => {
+          tr.remove();
+          updateAll();
+          saveNow();
+        });
+
+        expensesBody.appendChild(tr);
+      }
+
+      function sanitizeNumberField(v) {
+        const n = parseNum(v);
+        if (!Number.isFinite(n)) return "";
+        // keep two decimals if needed
+        return n % 1 === 0
+          ? String(Math.round(n))
+          : String(Math.round(n * 100) / 100);
+      }
+
+      function escapeHtml(s) {
+        return (s + "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function load() {
+        const raw = localStorage.getItem(KEY);
+        if (raw) {
+          try {
+            const data = JSON.parse(raw);
+            incomeInput.value = data.income || "";
+            currentInput.value = data.current || "";
+            targetInput.value = data.target || "";
+            currencySelect.value = data.currency || "EUR";
+
+            // clear rows
+            expensesBody.innerHTML = "";
+            (data.expenses && data.expenses.length
+              ? data.expenses
+              : DEFAULTS
+            ).forEach((e) => createRow(e));
+          } catch (e) {
+            console.error("load error", e);
+            seedDefaults();
+          }
+        } else {
+          seedDefaults();
+        }
+        updateAll();
+      }
+
+      function seedDefaults() {
+        expensesBody.innerHTML = "";
+        DEFAULTS.forEach((d) => createRow(d));
+        incomeInput.value = "";
+        currentInput.value = "";
+        targetInput.value = "";
+      }
+
+      function gather() {
+        const items = [];
+        for (const tr of expensesBody.children) {
+          const name = tr.children[0].querySelector("input").value || "";
+          const amount = parseNum(tr.children[1].querySelector("input").value);
+          const repeat = tr.children[2].querySelector("select").value;
+          // normalize weekly/yearly to monthly
+          let monthly = amount;
+          if (repeat === "weekly") monthly = amount * 4.345; // approx weeks per month
+          if (repeat === "yearly") monthly = amount / 12;
+          items.push({ name, amount: monthly, raw: amount, repeat });
+        }
+        return items;
+      }
+
+      function updateAll() {
+        // calculate totals
+        const income = parseNum(incomeInput.value);
+        const current = parseNum(currentInput.value);
+        const target = parseNum(targetInput.value);
+        const items = gather();
+        let totalMonthly = 0;
+        items.forEach(
+          (i) => (totalMonthly += Number.isFinite(i.amount) ? i.amount : 0)
+        );
+
+        const totalRounded = Math.round(totalMonthly * 100) / 100;
+        totalExpensesEl.textContent = fmt(totalRounded);
+
+        const net = Math.round((income - totalRounded) * 100) / 100;
+        netSavingsEl.textContent = fmt(net);
+
+        const pct = income > 0 ? Math.round((totalRounded / income) * 100) : 0;
+        pctSpentEl.textContent = pct + "%";
+
+        // progress toward target
+        const progress = target > 0 ? Math.min(1, current / target) : 0;
+        progressBar.style.width = Math.round(progress * 100) + "%";
+        progressLabel.textContent = fmt(current) + " / " + fmt(target);
+
+        // months needed
+        const remaining = Math.max(0, target - current);
+        let monthsNeeded = null;
+        if (net <= 0) {
+          monthsNeeded = null;
+        } else {
+          monthsNeeded = Math.ceil(remaining / net);
+        }
+
+        if (remaining <= 0) {
+          monthsNeededEl.textContent = "Already reached 🎉";
+          reachDateEl.textContent = "";
+          adviceEl.textContent = "";
+        } else if (monthsNeeded === null) {
+          monthsNeededEl.innerHTML =
+            '<span class="danger">Unreachable with current monthly savings</span>';
+          reachDateEl.textContent =
+            "Increase income or reduce monthly expenses to start saving.";
+          adviceEl.textContent = "";
+        } else {
+          monthsNeededEl.textContent = monthsNeeded + " months";
+          const now = new Date();
+          const reach = new Date(
+            now.getFullYear(),
+            now.getMonth() + monthsNeeded,
+            now.getDate()
+          );
+          reachDateEl.textContent =
+            "Projected: " +
+            reach.toLocaleString(undefined, { month: "long", year: "numeric" });
+
+          const perYear = Math.floor(monthsNeeded / 12);
+          const perMonths = monthsNeeded % 12;
+          adviceEl.textContent = `If you save ${fmt(
+            net
+          )} per month you'll reach your goal in ${monthsNeeded} months (${
+            perYear > 0 ? perYear + " yr(s)" : ""
+          } ${perMonths > 0 ? perMonths + " mo" : ""}).`;
+        }
+
+        scheduleSave();
+      }
+
+      let saveTimer = null;
+      function scheduleSave() {
+        if (saveTimer) clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveNow, 700);
+      }
+
+      function saveNow() {
+        const data = {
+          income: sanitizeNumberField(incomeInput.value),
+          current: sanitizeNumberField(currentInput.value),
+          target: sanitizeNumberField(targetInput.value),
+          currency: currencySelect.value,
+          expenses: Array.from(expensesBody.children).map((tr) => ({
+            name: tr.children[0].querySelector("input").value,
+            amount: parseNum(tr.children[1].querySelector("input").value),
+            repeat: tr.children[2].querySelector("select").value,
+          })),
+        };
+        localStorage.setItem(KEY, JSON.stringify(data));
+        // small visual feedback
+        document.getElementById("saveNow").textContent = "Saved";
+        setTimeout(
+          () => (document.getElementById("saveNow").textContent = "Save now"),
+          900
+        );
+      }
+
+      // Buttons
+      document.getElementById("saveNow").addEventListener("click", () => {
+        saveNow();
+        updateAll();
+      });
+      document.getElementById("clearLocal").addEventListener("click", () => {
+        if (confirm("Clear saved data? This cannot be undone.")) {
+          localStorage.removeItem(KEY);
+          load();
+        }
+      });
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        if (confirm("Reset the form to defaults?")) {
+          localStorage.removeItem(KEY);
+          seedDefaults();
+          updateAll();
+        }
+      });
+
+      addBtn.addEventListener("click", () => {
+        createRow({ name: "", amount: "" });
+      });
+
+      // Export CSV
+      document.getElementById("exportCsv").addEventListener("click", () => {
+        const income = sanitizeNumberField(incomeInput.value);
+        const current = sanitizeNumberField(currentInput.value);
+        const target = sanitizeNumberField(targetInput.value);
+        const cur = currencySelect.value;
+        const rows = [];
+        rows.push(["Monthly Income", income, cur]);
+        rows.push(["Current Saving", current, cur]);
+        rows.push(["Target", target, cur]);
+        rows.push([]);
+        rows.push([
+          "Category",
+          "Repeat",
+          "Amount (orig)",
+          "Amount (monthly)",
+          "Currency",
+        ]);
+        Array.from(expensesBody.children).forEach((tr) => {
+          const name = tr.children[0].querySelector("input").value;
+          const raw = parseNum(tr.children[1].querySelector("input").value);
+          const repeat = tr.children[2].querySelector("select").value;
+          let monthly = raw;
+          if (repeat === "weekly") monthly = raw * 4.345;
+          if (repeat === "yearly") monthly = raw / 12;
+          rows.push([name, repeat, raw, Math.round(monthly * 100) / 100, cur]);
+        });
+
+        const csv = rows
+          .map((r) =>
+            r
+              .map((c) => '"' + String(c || "").replace(/"/g, '""') + '"')
+              .join(",")
+          )
+          .join("\n");
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "house_planner_export.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      // helpers
+      function round2(n) {
+        return Math.round(n * 100) / 100;
+      }
+
+      function restoreOnCurrencyChange() {
+        // only saves currency immediately
+        scheduleSave();
+        updateAll();
+      }
+
+      currencySelect.addEventListener("change", restoreOnCurrencyChange);
+
+      // initial load
+      load();
+
+      // auto update when inputs change
+      incomeInput.addEventListener("input", updateAll);
+      currentInput.addEventListener("input", updateAll);
+      targetInput.addEventListener("input", updateAll);
+    </script>
+  </body>
+</html>
