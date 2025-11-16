@@ -865,9 +865,9 @@
         <td style="width:60%"><input class="input text-input" placeholder="Item" value="${escapeHtml(
           item.name || ""
         )}" /></td>
-        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${
-          item.amount || ""
-        }" /></td>
+        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${formatDisplay(
+          item.amount
+        )}" /></td>
         <td style="width:40px;text-align:right;padding-bottom:10px;"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
       `;
         const nameI = tr.children[1].querySelector("input");
@@ -933,9 +933,9 @@
         <td style="width:60%"><input class="input text-input" placeholder="Target item e.g. Terrain" value="${escapeHtml(
           item.name || ""
         )}" /></td>
-        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${
-          item.cost || ""
-        }" /></td>
+        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${formatDisplay(
+          item.cost
+        )}" /></td>
         <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
       `;
         const nameI = tr.children[1].querySelector("input");
@@ -1001,9 +1001,9 @@
         <td style="width:60%"><input class="input text-input" placeholder="Item e.g. Refrigerator" value="${escapeHtml(
           item.name || ""
         )}" /></td>
-        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${
-          item.cost || ""
-        }" /></td>
+        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${formatDisplay(
+          item.cost
+        )}" /></td>
         <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
       `;
         const nameI = tr.children[1].querySelector("input");
@@ -1087,11 +1087,11 @@
         if (raw) {
           try {
             const data = JSON.parse(raw);
-            incomeInput.value = data.income || "";
-            bonusesInput.value = data.bonuses || "";
-            sideIncomeInput.value = data.sideIncome || "";
-            currentInput.value = data.current || "";
-            currencySelect.value = data.currency || "€";
+            incomeInput.value = formatDisplay(data.income);
+            bonusesInput.value = formatDisplay(data.bonuses);
+            sideIncomeInput.value = formatDisplay(data.sideIncome);
+            currentInput.value = formatDisplay(data.current);
+            currencySelect.value = data.currency || "EUR";
             expensesBody.innerHTML = "";
             targetsBody.innerHTML = "";
             interiorBody.innerHTML = "";
