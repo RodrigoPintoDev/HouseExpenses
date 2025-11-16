@@ -221,10 +221,11 @@
         stroke: var(--danger);
       }
       .currency-select {
+        text-align: center;
         font-size: 15px;
         padding: 8px 10px;
         border-radius: 10px;
-        width: 50px;
+        width: 40px;
         height: var(--input-height);
         background: rgba(232, 232, 240, 0.05);
         color: inherit;
@@ -235,6 +236,15 @@
         outline: none;
         border-color: var(--accent);
         background: rgba(255, 255, 255, 0.04);
+      }
+
+      /* Remove native dropdown arrow while keeping native behavior */
+      .currency-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: none;
+        padding-right: 12px;
       }
       .bottom-progress {
         position: fixed;
@@ -449,7 +459,7 @@
 
           <div
             style="
-              width: 56px;
+              width: 46px;
               display: flex;
               flex-direction: column;
               align-items: flex-end;
@@ -1106,6 +1116,34 @@
               ? data.interior
               : DEFAULT_INTERIOR
             ).forEach((i) => createInteriorRow(i));
+            // restore accordion state (defaults: open)
+            const acc = data.accordions || {};
+            const setAcc = (key, open) => {
+              const arrow = document.querySelector(
+                `#${key}Header .accordion-arrow`
+              );
+              const content = document.getElementById(`${key}Content`);
+              if (!arrow || !content) return;
+              if (open === false) {
+                arrow.classList.add("collapsed");
+                content.classList.add("collapsed");
+              } else {
+                arrow.classList.remove("collapsed");
+                content.classList.remove("collapsed");
+              }
+            };
+            setAcc(
+              "expenses",
+              acc.expensesOpen !== undefined ? acc.expensesOpen : true
+            );
+            setAcc(
+              "targets",
+              acc.targetsOpen !== undefined ? acc.targetsOpen : true
+            );
+            setAcc(
+              "interior",
+              acc.interiorOpen !== undefined ? acc.interiorOpen : true
+            );
           } catch (e) {
             seedDefaults();
           }
@@ -1277,6 +1315,17 @@
           sideIncome: sanitize(sideIncomeInput.value),
           current: sanitize(currentInput.value),
           currency: currencySelect.value,
+          accordions: {
+            expensesOpen: !document
+              .getElementById("expensesContent")
+              .classList.contains("collapsed"),
+            targetsOpen: !document
+              .getElementById("targetsContent")
+              .classList.contains("collapsed"),
+            interiorOpen: !document
+              .getElementById("interiorContent")
+              .classList.contains("collapsed"),
+          },
           expenses: Array.from(expensesBody.children).map((tr) => ({
             name: tr.children[1].querySelector("input").value,
             amount: sanitize(tr.children[2].querySelector("input").value),
@@ -1337,6 +1386,7 @@
           const content = document.getElementById("expensesContent");
           arrow.classList.toggle("collapsed");
           content.classList.toggle("collapsed");
+          scheduleSave();
         });
 
       document.getElementById("targetsHeader").addEventListener("click", () => {
@@ -1344,6 +1394,7 @@
         const content = document.getElementById("targetsContent");
         arrow.classList.toggle("collapsed");
         content.classList.toggle("collapsed");
+        scheduleSave();
       });
 
       document
@@ -1355,6 +1406,7 @@
           const content = document.getElementById("interiorContent");
           arrow.classList.toggle("collapsed");
           content.classList.toggle("collapsed");
+          scheduleSave();
         });
 
       function trashSvg() {
