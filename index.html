@@ -391,10 +391,10 @@
       </header>
 
       <section class="card">
-        <div class="row">
+        <div style="display: flex; gap: 12px; align-items: flex-end">
           <div style="flex: 1">
-            <label class="tiny icon-inline"
-              ><svg
+            <label class="tiny icon-inline">
+              <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="none"
@@ -408,8 +408,8 @@
                 <path d="M9 9h.01" />
                 <path d="M15 15h.01" />
               </svg>
-              Monthly Income</label
-            >
+              Monthly Income
+            </label>
             <input
               id="income"
               class="input amount-input"
@@ -417,68 +417,10 @@
               placeholder="e.g. 2500"
             />
           </div>
-          <div>
-            <label class="tiny">Cur.</label>
-            <select id="currency" class="currency-select">
-              <option value="EUR">€</option>
-              <option value="USD">$</option>
-              <option value="GBP">£</option>
-            </select>
-          </div>
-        </div>
 
-        <div style="margin-top: 16px">
-          <label class="tiny icon-inline"
-            ><svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
-            Current Savings</label
-          >
-          <input
-            id="currentMoney"
-            class="input amount-input"
-            inputmode="decimal"
-            placeholder="e.g. 15000"
-          />
-        </div>
-
-        <div style="margin-top: 16px; display: flex; gap: var(--space)">
           <div style="flex: 1">
-            <label class="tiny icon-inline"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-                />
-              </svg>
-              Yearly Bonuses</label
-            >
-            <input
-              id="bonuses"
-              class="input amount-input"
-              inputmode="decimal"
-              placeholder="e.g. 5000"
-            />
-          </div>
-          <div style="flex: 1">
-            <label class="tiny icon-inline"
-              ><svg
+            <label class="tiny icon-inline">
+              <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="none"
@@ -491,13 +433,94 @@
                   d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
                 />
               </svg>
-              Side Income</label
-            >
+              Side Income
+            </label>
             <input
               id="sideIncome"
               class="input amount-input"
               inputmode="decimal"
-              placeholder="e.g. 800/month"
+              placeholder="e.g. 800"
+            />
+          </div>
+
+          <div
+            style="
+              width: 56px;
+              display: flex;
+              flex-direction: column;
+              align-items: flex-end;
+              gap: 6px;
+            "
+          >
+            <label
+              class="tiny"
+              style="align-self: start; margin-bottom: 2px; margin-left: 7px"
+              >Cur.</label
+            >
+            <select id="currency" class="currency-select">
+              <option value="EUR">€</option>
+              <option value="USD">$</option>
+              <option value="GBP">£</option>
+            </select>
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid var(--glass);
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+          "
+        >
+          <div style="flex: 1">
+            <label class="tiny icon-inline">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                />
+              </svg>
+              Yearly Bonuses
+            </label>
+            <input
+              id="bonuses"
+              class="input amount-input"
+              inputmode="decimal"
+              placeholder="e.g. 5000"
+            />
+          </div>
+
+          <div style="flex: 1">
+            <label class="tiny icon-inline">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+              Current Savings
+            </label>
+            <input
+              id="currentMoney"
+              class="input amount-input"
+              inputmode="decimal"
+              placeholder="e.g. 15000"
             />
           </div>
         </div>
