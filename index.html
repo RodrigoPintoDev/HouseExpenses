@@ -594,7 +594,7 @@
             >
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9 22 9 12 15 12 15 22" /></svg
-            ><strong>Home Investment Goals</strong>
+            ><strong>House & Construction</strong>
           </div>
           <svg
             class="accordion-arrow"
@@ -616,6 +616,55 @@
           </table>
           <div class="floating-add">
             <button id="addTarget" class="btn small-btn">+ Add Goal</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="interiorCard">
+        <div class="accordion-header" id="interiorHeader">
+          <div style="display: flex; align-items: center; gap: 12px">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              style="
+                width: 22px;
+                height: 22px;
+                color: var(--accent);
+                flex-shrink: 0;
+                margin-top: -2px;
+              "
+            >
+              <path
+                d="M10 2h4M9 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2m0 0V1m6 0v1m0 18v1"
+              />
+              <rect x="5" y="8" width="14" height="10" rx="1" /></svg
+            ><strong>Electrodomestics & Interior</strong>
+          </div>
+          <svg
+            class="accordion-arrow"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="width: 20px; height: 20px"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        <div class="accordion-content" id="interiorContent">
+          <table id="interiorTable">
+            <tbody id="interiorBody"></tbody>
+          </table>
+          <div class="floating-add">
+            <button id="addInterior" class="btn small-btn">+ Add Item</button>
           </div>
         </div>
       </section>
@@ -756,6 +805,7 @@
 
       const expensesBody = document.getElementById("expensesBody");
       const targetsBody = document.getElementById("targetsBody");
+      const interiorBody = document.getElementById("interiorBody");
       const incomeInput = document.getElementById("income");
       const bonusesInput = document.getElementById("bonuses");
       const sideIncomeInput = document.getElementById("sideIncome");
@@ -786,9 +836,17 @@
       const DEFAULT_TARG = [
         { name: "Terrain", cost: 0 },
         { name: "House construction", cost: 0 },
+        { name: "Licenses & permits", cost: 0 },
         { name: "Canalization", cost: 0 },
         { name: "Electrics", cost: 0 },
-        { name: "Appliances", cost: 0 },
+      ];
+
+      const DEFAULT_INTERIOR = [
+        { name: "Kitchen appliances", cost: 0 },
+        { name: "Furniture", cost: 0 },
+        { name: "Flooring", cost: 0 },
+        { name: "Painting & decoration", cost: 0 },
+        { name: "Heating & cooling", cost: 0 },
       ];
 
       let draggedRow = null;
@@ -929,6 +987,74 @@
         targetsBody.appendChild(tr);
       }
 
+      function createInteriorRow(item) {
+        const tr = document.createElement("tr");
+        tr.className = "sortable-item";
+        tr.draggable = true;
+        tr.innerHTML = `
+        <td style="width:24px;cursor:grab;color:var(--muted)">≡</td>
+        <td style="width:60%"><input class="input text-input" placeholder="Item e.g. Refrigerator" value="${escapeHtml(
+          item.name || ""
+        )}" /></td>
+        <td class="amount"><input inputmode="decimal" class="input amount-input" value="${
+          item.cost || ""
+        }" /></td>
+        <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
+      `;
+        const nameI = tr.children[1].querySelector("input");
+        const amtI = tr.children[2].querySelector("input");
+        const del = tr.children[3].querySelector("button");
+
+        nameI.addEventListener("input", scheduleSave);
+        amtI.addEventListener("input", updateAll);
+        amtI.addEventListener("blur", () => {
+          amtI.value = formatDisplay(amtI.value);
+          updateAll();
+        });
+
+        del.addEventListener("click", () => {
+          const name = (nameI.value || "").trim();
+          const amt = (amtI.value || "").trim();
+          if (name === "" && amt === "") {
+            tr.remove();
+            updateAll();
+            saveNow();
+            return;
+          }
+          if (!confirm("Delete this item? This action cannot be undone."))
+            return;
+          tr.remove();
+          updateAll();
+          saveNow();
+          showToast("Item deleted", "success");
+        });
+
+        // Drag and drop
+        tr.addEventListener("dragstart", () => {
+          draggedRow = tr;
+          tr.classList.add("dragging");
+        });
+        tr.addEventListener("dragend", () => {
+          tr.classList.remove("dragging");
+          draggedRow = null;
+        });
+        tr.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          if (draggedRow && draggedRow !== tr) {
+            const allRows = Array.from(interiorBody.children);
+            const draggedIndex = allRows.indexOf(draggedRow);
+            const targetIndex = allRows.indexOf(tr);
+            if (draggedIndex < targetIndex) {
+              tr.parentNode.insertBefore(draggedRow, tr.nextSibling);
+            } else {
+              tr.parentNode.insertBefore(draggedRow, tr);
+            }
+          }
+        });
+
+        interiorBody.appendChild(tr);
+      }
+
       function sanitizeField(v) {
         const n = parseNum(v);
         if (!Number.isFinite(n)) return "";
@@ -951,7 +1077,6 @@
           .replace(/>/g, "&gt;")
           .replace(/\"/g, "&quot;");
       }
-
       function load() {
         const raw = localStorage.getItem(KEY);
         if (raw) {
@@ -964,6 +1089,7 @@
             currencySelect.value = data.currency || "€";
             expensesBody.innerHTML = "";
             targetsBody.innerHTML = "";
+            interiorBody.innerHTML = "";
             (data.expenses && data.expenses.length
               ? data.expenses
               : DEFAULT_EXP
@@ -972,6 +1098,10 @@
               ? data.targets
               : DEFAULT_TARG
             ).forEach((t) => createTargetRow(t));
+            (data.interior && data.interior.length
+              ? data.interior
+              : DEFAULT_INTERIOR
+            ).forEach((i) => createInteriorRow(i));
           } catch (e) {
             seedDefaults();
           }
@@ -984,8 +1114,10 @@
       function seedDefaults() {
         expensesBody.innerHTML = "";
         targetsBody.innerHTML = "";
+        interiorBody.innerHTML = "";
         DEFAULT_EXP.forEach((e) => createExpenseRow(e));
         DEFAULT_TARG.forEach((t) => createTargetRow(t));
+        DEFAULT_INTERIOR.forEach((i) => createInteriorRow(i));
       }
 
       function gatherExpenses() {
@@ -1004,6 +1136,18 @@
         let total = 0;
         const rows = [];
         for (const tr of targetsBody.children) {
+          const name = tr.children[1].querySelector("input").value || "";
+          const cost = sanitize(tr.children[2].querySelector("input").value);
+          total += cost;
+          rows.push({ name, cost });
+        }
+        return { rows, total };
+      }
+
+      function gatherInterior() {
+        let total = 0;
+        const rows = [];
+        for (const tr of interiorBody.children) {
           const name = tr.children[1].querySelector("input").value || "";
           const cost = sanitize(tr.children[2].querySelector("input").value);
           total += cost;
@@ -1051,9 +1195,11 @@
         const current = sanitize(currentInput.value);
         const exp = gatherExpenses();
         const targ = gatherTargets();
+        const interior = gatherInterior();
+        const totalGoals = targ.total + interior.total;
 
         totalExpensesEl.textContent = fmt(exp.total);
-        totalTargetsEl.textContent = fmt(targ.total);
+        totalTargetsEl.textContent = fmt(totalGoals);
 
         // Calculate monthly net savings: base income + side income + (yearly bonuses / 12)
         const monthlyBonuses = Math.round((bonuses / 12) * 100) / 100;
@@ -1063,16 +1209,16 @@
         netSavingsEl.textContent = fmt(net);
 
         // progress
-        const progress = targ.total > 0 ? Math.min(1, current / targ.total) : 0;
+        const progress = totalGoals > 0 ? Math.min(1, current / totalGoals) : 0;
         const pct = Math.round(progress * 100);
         progressBar.style.width = pct + "%";
         bottomProgressBar.style.width = pct + "%";
-        progressLabel.textContent = fmt(current) + " / " + fmt(targ.total);
+        progressLabel.textContent = fmt(current) + " / " + fmt(totalGoals);
         bottomProgressLabel.textContent =
-          fmt(current) + " / " + fmt(targ.total);
+          fmt(current) + " / " + fmt(totalGoals);
 
         // months needed
-        const remaining = Math.max(0, targ.total - current);
+        const remaining = Math.max(0, totalGoals - current);
         let monthsNeeded = null;
         if (net <= 0) {
           monthsNeeded = null;
@@ -1135,6 +1281,10 @@
             name: tr.children[1].querySelector("input").value,
             cost: sanitize(tr.children[2].querySelector("input").value),
           })),
+          interior: Array.from(interiorBody.children).map((tr) => ({
+            name: tr.children[1].querySelector("input").value,
+            cost: sanitize(tr.children[2].querySelector("input").value),
+          })),
         };
         localStorage.setItem(KEY, JSON.stringify(data));
       }
@@ -1146,6 +1296,10 @@
       document.getElementById("addTarget").addEventListener("click", () => {
         createTargetRow({ name: "", cost: "" });
         showToast("Goal added", "success");
+      });
+      document.getElementById("addInterior").addEventListener("click", () => {
+        createInteriorRow({ name: "", cost: "" });
+        showToast("Item added", "success");
       });
 
       incomeInput.addEventListener("input", updateAll);
@@ -1187,6 +1341,17 @@
         arrow.classList.toggle("collapsed");
         content.classList.toggle("collapsed");
       });
+
+      document
+        .getElementById("interiorHeader")
+        .addEventListener("click", () => {
+          const arrow = document.querySelector(
+            "#interiorHeader .accordion-arrow"
+          );
+          const content = document.getElementById("interiorContent");
+          arrow.classList.toggle("collapsed");
+          content.classList.toggle("collapsed");
+        });
 
       function trashSvg() {
         return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
