@@ -278,6 +278,69 @@
         font-size: 12px;
         color: var(--muted);
       }
+      .toast {
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--card);
+        color: var(--text);
+        padding: 16px 24px;
+        border-radius: var(--radius);
+        border: 1px solid var(--glass);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+        max-width: 90%;
+        animation: slideUp 0.3s ease-out;
+      }
+      .toast.success {
+        border-left: 4px solid var(--success);
+      }
+      .toast.error {
+        border-left: 4px solid var(--danger);
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+      .sortable-item {
+        cursor: grab;
+        transition: opacity 0.2s;
+      }
+      .sortable-item:active {
+        cursor: grabbing;
+        opacity: 0.7;
+      }
+      .sortable-item.dragging {
+        opacity: 0.5;
+      }
+      .floating-add {
+        background: var(--card);
+        padding: 12px 0;
+        margin-top: 8px;
+        border-top: 1px solid var(--glass);
+        display: flex;
+        gap: 8px;
+      }
+      .floating-add .btn {
+        flex: 1;
+      }
+      .drag-handle {
+        cursor: grab;
+        color: var(--muted);
+        padding: 0 4px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .drag-handle:active {
+        cursor: grabbing;
+      }
       @media (min-width: 720px) {
         .wrap {
           padding: 32px;
@@ -379,11 +442,13 @@
               <polyline points="19 12 12 19 5 12" /></svg
             ><strong>Monthly Expenses</strong>
           </div>
-          <button id="addExpense" class="btn small-btn">+ Add</button>
         </div>
         <table id="expensesTable">
           <tbody id="expensesBody"></tbody>
         </table>
+        <div class="floating-add">
+          <button id="addExpense" class="btn small-btn">+ Add Expense</button>
+        </div>
       </section>
 
       <section class="card" id="targetsCard">
@@ -409,11 +474,13 @@
               <polyline points="9 22 9 12 15 12 15 22" /></svg
             ><strong>Home Investment Goals</strong>
           </div>
-          <button id="addTarget" class="btn small-btn">+ Add</button>
         </div>
         <table id="targetsTable">
           <tbody id="targetsBody"></tbody>
         </table>
+        <div class="floating-add">
+          <button id="addTarget" class="btn small-btn">+ Add Goal</button>
+        </div>
       </section>
 
       <section class="card">
@@ -486,9 +553,7 @@
             display: flex;
             gap: 8px;
           "
-        >
-          <button id="clearLocal" class="ghost">Clear saved data</button>
-        </div>
+        ></div>
       </section>
     </div>
 
@@ -524,6 +589,18 @@
     </div>
 
     <script>
+      // Toast notification system
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.animation = "slideUp 0.3s ease-out reverse";
+          setTimeout(() => toast.remove(), 300);
+        }, 2000);
+      }
+
       // Helpers
       function fmt(n) {
         const cur = document.getElementById("currency").value || "EUR";
@@ -585,9 +662,14 @@
         { name: "Appliances", cost: 0 },
       ];
 
+      let draggedRow = null;
+
       function createExpenseRow(item) {
         const tr = document.createElement("tr");
+        tr.className = "sortable-item";
+        tr.draggable = true;
         tr.innerHTML = `
+        <td style="width:24px;cursor:grab;color:var(--muted)">≡</td>
         <td style="width:60%"><input class="input text-input" placeholder="Item" value="${escapeHtml(
           item.name || ""
         )}" /></td>
@@ -596,38 +678,66 @@
         }" /></td>
         <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
       `;
-        const nameI = tr.children[0].querySelector("input");
-        const amtI = tr.children[1].querySelector("input");
-        const del = tr.children[2].querySelector("button");
+        const nameI = tr.children[1].querySelector("input");
+        const amtI = tr.children[2].querySelector("input");
+        const del = tr.children[3].querySelector("button");
+
         nameI.addEventListener("input", scheduleSave);
         amtI.addEventListener("input", updateAll);
         amtI.addEventListener("blur", () => {
           amtI.value = sanitizeField(amtI.value);
           updateAll();
         });
+
         del.addEventListener("click", () => {
           const name = (nameI.value || "").trim();
           const amt = (amtI.value || "").trim();
           if (name === "" && amt === "") {
-            // empty row — remove without confirmation
             tr.remove();
             updateAll();
             saveNow();
             return;
           }
-          // non-empty — ask for confirmation
-          if (confirm("Delete this expense?")) {
-            tr.remove();
-            updateAll();
-            saveNow();
+          if (!confirm("Delete this expense? This action cannot be undone."))
+            return;
+          tr.remove();
+          updateAll();
+          saveNow();
+          showToast("Expense deleted", "success");
+        });
+
+        // Drag and drop
+        tr.addEventListener("dragstart", () => {
+          draggedRow = tr;
+          tr.classList.add("dragging");
+        });
+        tr.addEventListener("dragend", () => {
+          tr.classList.remove("dragging");
+          draggedRow = null;
+        });
+        tr.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          if (draggedRow && draggedRow !== tr) {
+            const allRows = Array.from(expensesBody.children);
+            const draggedIndex = allRows.indexOf(draggedRow);
+            const targetIndex = allRows.indexOf(tr);
+            if (draggedIndex < targetIndex) {
+              tr.parentNode.insertBefore(draggedRow, tr.nextSibling);
+            } else {
+              tr.parentNode.insertBefore(draggedRow, tr);
+            }
           }
         });
+
         expensesBody.appendChild(tr);
       }
 
       function createTargetRow(item) {
         const tr = document.createElement("tr");
+        tr.className = "sortable-item";
+        tr.draggable = true;
         tr.innerHTML = `
+        <td style="width:24px;cursor:grab;color:var(--muted)">≡</td>
         <td style="width:60%"><input class="input text-input" placeholder="Target item e.g. Terrain" value="${escapeHtml(
           item.name || ""
         )}" /></td>
@@ -636,31 +746,57 @@
         }" /></td>
         <td style="width:40px;text-align:right"><button class="trash-btn" title="Delete">${trashSvg()}</button></td>
       `;
-        const nameI = tr.children[0].querySelector("input");
-        const amtI = tr.children[1].querySelector("input");
-        const del = tr.children[2].querySelector("button");
+        const nameI = tr.children[1].querySelector("input");
+        const amtI = tr.children[2].querySelector("input");
+        const del = tr.children[3].querySelector("button");
+
         nameI.addEventListener("input", scheduleSave);
         amtI.addEventListener("input", updateAll);
         amtI.addEventListener("blur", () => {
           amtI.value = sanitizeField(amtI.value);
           updateAll();
         });
+
         del.addEventListener("click", () => {
           const name = (nameI.value || "").trim();
           const amt = (amtI.value || "").trim();
           if (name === "" && amt === "") {
-            // empty row — remove without confirmation
             tr.remove();
             updateAll();
             saveNow();
             return;
           }
-          if (confirm("Delete this goal?")) {
-            tr.remove();
-            updateAll();
-            saveNow();
+          if (!confirm("Delete this goal? This action cannot be undone."))
+            return;
+          tr.remove();
+          updateAll();
+          saveNow();
+          showToast("Goal deleted", "success");
+        });
+
+        // Drag and drop
+        tr.addEventListener("dragstart", () => {
+          draggedRow = tr;
+          tr.classList.add("dragging");
+        });
+        tr.addEventListener("dragend", () => {
+          tr.classList.remove("dragging");
+          draggedRow = null;
+        });
+        tr.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          if (draggedRow && draggedRow !== tr) {
+            const allRows = Array.from(targetsBody.children);
+            const draggedIndex = allRows.indexOf(draggedRow);
+            const targetIndex = allRows.indexOf(tr);
+            if (draggedIndex < targetIndex) {
+              tr.parentNode.insertBefore(draggedRow, tr.nextSibling);
+            } else {
+              tr.parentNode.insertBefore(draggedRow, tr);
+            }
           }
         });
+
         targetsBody.appendChild(tr);
       }
 
@@ -717,8 +853,8 @@
         let total = 0;
         const rows = [];
         for (const tr of expensesBody.children) {
-          const name = tr.children[0].querySelector("input").value || "";
-          const amt = sanitize(tr.children[1].querySelector("input").value);
+          const name = tr.children[1].querySelector("input").value || "";
+          const amt = sanitize(tr.children[2].querySelector("input").value);
           total += amt;
           rows.push({ name, amount: amt });
         }
@@ -729,8 +865,8 @@
         let total = 0;
         const rows = [];
         for (const tr of targetsBody.children) {
-          const name = tr.children[0].querySelector("input").value || "";
-          const cost = sanitize(tr.children[1].querySelector("input").value);
+          const name = tr.children[1].querySelector("input").value || "";
+          const cost = sanitize(tr.children[2].querySelector("input").value);
           total += cost;
           rows.push({ name, cost });
         }
@@ -845,40 +981,31 @@
           current: sanitize(currentInput.value),
           currency: currencySelect.value,
           expenses: Array.from(expensesBody.children).map((tr) => ({
-            name: tr.children[0].querySelector("input").value,
-            amount: sanitize(tr.children[1].querySelector("input").value),
+            name: tr.children[1].querySelector("input").value,
+            amount: sanitize(tr.children[2].querySelector("input").value),
           })),
           targets: Array.from(targetsBody.children).map((tr) => ({
-            name: tr.children[0].querySelector("input").value,
-            cost: sanitize(tr.children[1].querySelector("input").value),
+            name: tr.children[1].querySelector("input").value,
+            cost: sanitize(tr.children[2].querySelector("input").value),
           })),
         };
         localStorage.setItem(KEY, JSON.stringify(data));
       }
 
-      document
-        .getElementById("addExpense")
-        .addEventListener("click", () =>
-          createExpenseRow({ name: "", amount: "" })
-        );
-      document
-        .getElementById("addTarget")
-        .addEventListener("click", () =>
-          createTargetRow({ name: "", cost: "" })
-        );
+      document.getElementById("addExpense").addEventListener("click", () => {
+        createExpenseRow({ name: "", amount: "" });
+        showToast("Expense added", "success");
+      });
+      document.getElementById("addTarget").addEventListener("click", () => {
+        createTargetRow({ name: "", cost: "" });
+        showToast("Goal added", "success");
+      });
 
       incomeInput.addEventListener("input", updateAll);
       currentInput.addEventListener("input", updateAll);
       currencySelect.addEventListener("change", () => {
         scheduleSave();
         updateAll();
-      });
-
-      document.getElementById("clearLocal").addEventListener("click", () => {
-        if (confirm("Clear saved data? This cannot be undone.")) {
-          localStorage.removeItem(KEY);
-          load();
-        }
       });
 
       function trashSvg() {
