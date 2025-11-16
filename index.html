@@ -56,7 +56,7 @@
       }
       .card {
         background: var(--card);
-        padding: 24px 18px;
+        padding: 24px 16px;
         border-radius: var(--radius);
         margin-bottom: var(--space);
         border: 1px solid var(--glass);
@@ -812,9 +812,8 @@
         const del = tr.children[3].querySelector("button");
 
         nameI.addEventListener("input", scheduleSave);
-        amtI.addEventListener("input", updateAll);
-        amtI.addEventListener("blur", () => {
-          amtI.value = sanitizeField(amtI.value);
+        amtI.addEventListener("input", () => {
+          formatNumberInput(amtI);
           updateAll();
         });
 
@@ -880,9 +879,8 @@
         const del = tr.children[3].querySelector("button");
 
         nameI.addEventListener("input", scheduleSave);
-        amtI.addEventListener("input", updateAll);
-        amtI.addEventListener("blur", () => {
-          amtI.value = sanitizeField(amtI.value);
+        amtI.addEventListener("input", () => {
+          formatNumberInput(amtI);
           updateAll();
         });
 
@@ -936,6 +934,24 @@
           ? String(Math.round(n))
           : String(Math.round(n * 100) / 100);
       }
+      function formatNumberInput(input) {
+        const cursorPos = input.selectionStart || 0;
+        const oldVal = input.value;
+        const numValue = parseNum(oldVal);
+        if (!Number.isFinite(numValue)) return;
+        const formatted = String(numValue).replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          " "
+        );
+        if (formatted !== oldVal) {
+          input.value = formatted;
+          const diff = formatted.length - oldVal.length;
+          input.selectionStart = input.selectionEnd = Math.max(
+            0,
+            cursorPos + diff
+          );
+        }
+      }
       function escapeHtml(s) {
         return (s || "")
           .replace(/&/g, "&amp;")
@@ -949,10 +965,22 @@
         if (raw) {
           try {
             const data = JSON.parse(raw);
-            incomeInput.value = data.income || "";
-            bonusesInput.value = data.bonuses || "";
-            sideIncomeInput.value = data.sideIncome || "";
-            currentInput.value = data.current || "";
+            incomeInput.value = String(data.income || "").replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              " "
+            );
+            bonusesInput.value = String(data.bonuses || "").replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              " "
+            );
+            sideIncomeInput.value = String(data.sideIncome || "").replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              " "
+            );
+            currentInput.value = String(data.current || "").replace(
+              /\B(?=(\d{3})+(?!\d))/g,
+              " "
+            );
             currencySelect.value = data.currency || "€";
             expensesBody.innerHTML = "";
             targetsBody.innerHTML = "";
@@ -1140,10 +1168,22 @@
         showToast("Goal added", "success");
       });
 
-      incomeInput.addEventListener("input", updateAll);
-      bonusesInput.addEventListener("input", updateAll);
-      sideIncomeInput.addEventListener("input", updateAll);
-      currentInput.addEventListener("input", updateAll);
+      incomeInput.addEventListener("input", () => {
+        formatNumberInput(incomeInput);
+        updateAll();
+      });
+      bonusesInput.addEventListener("input", () => {
+        formatNumberInput(bonusesInput);
+        updateAll();
+      });
+      sideIncomeInput.addEventListener("input", () => {
+        formatNumberInput(sideIncomeInput);
+        updateAll();
+      });
+      currentInput.addEventListener("input", () => {
+        formatNumberInput(currentInput);
+        updateAll();
+      });
       currencySelect.addEventListener("change", () => {
         scheduleSave();
         updateAll();
