@@ -693,8 +693,16 @@
           <div id="netSavings" class="big">€0</div>
         </div>
         <div class="metric">
-          <div class="tiny">Total Investment Target</div>
+          <div class="tiny">House & Construction</div>
           <div id="totalTargets" class="big">€0</div>
+        </div>
+        <div class="metric">
+          <div class="tiny">Electrodomestics & Interior</div>
+          <div id="totalInterior" class="big">€0</div>
+        </div>
+        <div class="metric">
+          <div class="tiny">Total Investment Target</div>
+          <div id="totalAllGoals" class="big">€0</div>
         </div>
 
         <div
@@ -828,6 +836,8 @@
       const totalExpensesEl = document.getElementById("totalExpenses");
       const netSavingsEl = document.getElementById("netSavings");
       const totalTargetsEl = document.getElementById("totalTargets");
+      const totalInteriorEl = document.getElementById("totalInterior");
+      const totalAllGoalsEl = document.getElementById("totalAllGoals");
       const progressBar = document.getElementById("progressBar");
       const bottomProgressBar = document.getElementById("bottomProgressBar");
       const progressLabel = document.getElementById("progressLabel");
@@ -1241,14 +1251,20 @@
         const totalGoals = targ.total + interior.total;
 
         totalExpensesEl.textContent = fmt(exp.total);
-        totalTargetsEl.textContent = fmt(totalGoals);
+        totalTargetsEl.textContent = fmt(targ.total);
+        totalInteriorEl.textContent = fmt(interior.total);
+        totalAllGoalsEl.textContent = fmt(totalGoals);
 
-        // Calculate monthly net savings: base income + side income + (yearly bonuses / 12)
+        // Calculate monthly net savings (display): base income + side income - expenses
+        const netDisplay =
+          Math.round((income + sideIncome - exp.total) * 100) / 100;
+        netSavingsEl.textContent = fmt(netDisplay);
+
+        // Calculate for projection: include monthly bonuses
         const monthlyBonuses = Math.round((bonuses / 12) * 100) / 100;
-        const net =
+        const netWithBonuses =
           Math.round((income + sideIncome + monthlyBonuses - exp.total) * 100) /
           100;
-        netSavingsEl.textContent = fmt(net);
 
         // progress
         const progress = totalGoals > 0 ? Math.min(1, current / totalGoals) : 0;
@@ -1262,10 +1278,10 @@
         // months needed
         const remaining = Math.max(0, totalGoals - current);
         let monthsNeeded = null;
-        if (net <= 0) {
+        if (netWithBonuses <= 0) {
           monthsNeeded = null;
         } else {
-          monthsNeeded = Math.ceil(remaining / net);
+          monthsNeeded = Math.ceil(remaining / netWithBonuses);
         }
 
         if (remaining <= 0) {
